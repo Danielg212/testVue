@@ -1,6 +1,7 @@
 export interface UserDetails {
-    date:string
-    username:string
+    id:any,
+    date:string,
+    username:string,
     address:string
 
 }

@@ -2,7 +2,7 @@
   <div class="dashboard">
     <div class="top-section">
     <div class="item">
-      <SearchInputWidget v-model="value" @input="onChange()"></SearchInputWidget>
+      <SearchInputWidget v-model="value" @input="onChange"></SearchInputWidget>
     </div>
   <div class="item">
     <UserDetailsComponent :userDetails="userDetails"></UserDetailsComponent>
@@ -10,7 +10,7 @@
   </div>
 
    <div class="item">
-    <GridTableComponent :dataTable="userDetailsList"></GridTableComponent>
+    <GridTableComponent :dataTable="userList"></GridTableComponent>
   </div>
   
   </div>
@@ -37,6 +37,7 @@ export default class Dashboard extends Vue {
   private timeoutId:number = 0;
   private userDetails:UserDetails = {} as UserDetails;
   private userDetailsList:Array<UserDetails> = [];
+  private filterdData:Array<UserDetails> = [];
 
   mounted(){
     console.log("computed")
@@ -44,23 +45,31 @@ export default class Dashboard extends Vue {
             .then(res=>res.json())
             .then(json => {
               this.userDetailsList = json as Array<UserDetails>
+              this.filterdData = this.userDetailsList
             })
   }
 
 
-  onChange(){
-    console.log(this.value);
+   onChange(){
 
-     if(this.timeoutId)clearTimeout(this.timeoutId);
-    this.timeoutId = setTimeout(() => {
-      console.log(this.value);
-      fetch(
-        "https://jsonblob.com/api/jsonBlob/8b736f94-197f-11e9-bede-11a3fc81650d"
-      ).then(res=>res.json())
-      .then(json => {
-          //console.log(json);
-        })
-    }, 800);
+    this.filterdData = this.userDetailsList.filter(item=>{
+      return item.name.includes(this.value) || item.address.includes(this.value) ;
+    })
+    
+    //  if(this.timeoutId)clearTimeout(this.timeoutId);
+    // this.timeoutId = setTimeout(() => {
+    //   console.log(this.value);
+    //   fetch(
+    //     "https://jsonblob.com/api/jsonBlob/8b736f94-197f-11e9-bede-11a3fc81650d"
+    //   ).then(res=>res.json())
+    //   .then(json => {
+    //       //console.log(json);
+    //     })
+    // }, 800);
+  }
+
+  get userList(){    
+    return this.filterdData;
   }
 
   onCLick(userDetailsData :UserDetails){
